@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b99b15fabed31b43ac481869e2e88ea, type: 3}
+  m_Name: Group_5
+  m_EditorClassIdentifier: 
+  _backgroundSprite: {fileID: 21300000, guid: 6f728141a92d1f64fb69a82260b209f7, type: 3}
+  _nameGroup: "\u0421\u0415\u0422 5"
+  _namesCard:
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.1"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.2"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.3"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.4"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.5"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.6"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.7"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.8"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.9"
+  - "\u041A\u0410\u0420\u0422\u041E\u0427\u041A\u0410 5.10"

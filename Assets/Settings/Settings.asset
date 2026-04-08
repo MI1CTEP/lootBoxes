@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c4f647145997ca49ae56fe5c3851b58, type: 3}
+  m_Name: Settings
+  m_EditorClassIdentifier: 
+  _rankCardSetting:
+  - outlineColor: {r: 0.9098039, g: 0.9098039, b: 0.9098039, a: 1}
+    priceKey: 10
+    priceLab: 10
+  - outlineColor: {r: 0.32941177, g: 0.79607844, b: 0.93333334, a: 1}
+    priceKey: 30
+    priceLab: 20
+  - outlineColor: {r: 0.96862745, g: 0.23921569, b: 0.7921569, a: 1}
+    priceKey: 80
+    priceLab: 30
+  - outlineColor: {r: 0.9764706, g: 0.7529412, b: 0.29411766, a: 1}
+    priceKey: 200
+    priceLab: 40
+  _cardGroups:
+  - {fileID: 11400000, guid: 5ccf237cf1ef4ac4289f9e6b13c0fee5, type: 2}
+  - {fileID: 11400000, guid: e56eac1aeb30c4a40889a0b97b4d6a9f, type: 2}
+  - {fileID: 11400000, guid: 142f9d371c034fa4c9505bb475237e50, type: 2}
+  - {fileID: 11400000, guid: d00ed85d2d7a2374eb11074c6c7ae908, type: 2}
+  - {fileID: 11400000, guid: 49c7b3e068b60a04a8a2a979014b591a, type: 2}
+  - {fileID: 11400000, guid: 47b4ac99f42f26f4096ad4435f354455, type: 2}
+  - {fileID: 11400000, guid: 2d03d48173f8c6440a6a14d6263b07a7, type: 2}
+  - {fileID: 11400000, guid: 20e9f22c264d14d4ca77ebed927aa8f6, type: 2}
+  - {fileID: 11400000, guid: 13710b3942e6d9b49b168d15daa18c4f, type: 2}
+  - {fileID: 11400000, guid: 9c05908f4418349408b30277d3d784f8, type: 2}
+  _upgradesSetting:
+    experience:
+      startValue: 20
+      stepValue: 10
+    capacity:
+      startValue: 5
+      stepValue: 1
+    income:
+      startTime: 180
+      stepTime: 10
+      maxLevelTime: 12
+      startQuantity: 2
+      neededGroupLevelToUpgradeQuantity: 10
+  _shopSetting:
+    addGoldKey: 100
+    addKey: 100
+    addLab: 100
