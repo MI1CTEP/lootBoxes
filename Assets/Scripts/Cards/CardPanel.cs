@@ -10,6 +10,7 @@ namespace MyGame.Cards
         [SerializeField] private CardOpeningPanel _cardOpeningPanel;
         [SerializeField] private BigCard _bigCard;
         [SerializeField] private Button _closeButton;
+        [SerializeField] private RectTransform _closeButtonPosition;
 
         private Anim _anim;
         private Image _backgroundImage;
@@ -50,7 +51,7 @@ namespace MyGame.Cards
             _bigCard.Show(miniCardTransform);
             _anim.SetNewSequence();
             _anim.Insert(0, _backgroundImage.DOFade(1, 1));
-            _anim.Insert(0, _closeRect.DOAnchorPosY(-65, 1));
+            _anim.Insert(0, _closeRect.DOMoveY(_closeButtonPosition.position.y, 1));
         }
 
         public void Hide()
