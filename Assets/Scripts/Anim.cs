@@ -33,7 +33,7 @@ namespace MyGame
 
         public void InsertCallback(float startTime, TweenCallback tweenCallback) => _seq.InsertCallback(startTime, tweenCallback);
 
-        private void TryStopAnim()
+        public void TryStopAnim()
         {
             if(_seq != null)
             {
