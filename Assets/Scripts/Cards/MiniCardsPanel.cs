@@ -46,7 +46,15 @@ namespace MyGame.Cards
             {
                 Card card = cards[i];
                 MiniCard miniCard = _miniCardsController.GetMiniCard();
-                miniCard.SetClickLogic(()=> _cardPanel.Show(card, miniCard.transform));
+                miniCard.SetClickLogic(()=> 
+                {
+                    if (card.isNew)
+                    {
+                        GroupSelectionPanel.Instance.AddAndRemoveNewAction(card.groupId, false);
+                        card.isNew = false;
+                    }
+                    _cardPanel.Show(card, miniCard.transform); 
+                });
                 miniCard.transform.SetParent(transform);
                 miniCard.transform.localScale = Vector3.one;
                 miniCard.SetCard(card);

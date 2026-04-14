@@ -11,6 +11,8 @@ namespace MyGame.GroupUpgrade
 
         private UpgradeLevelPanel _upgradeLevelPanel;
 
+        public static UnityAction<int> OnUpgrade { get; set; }
+
         public void Init(UpgradeLevelPanel upgradeLevelPanel)
         {
             _upgradeLevelPanel = upgradeLevelPanel;
@@ -22,6 +24,7 @@ namespace MyGame.GroupUpgrade
             int experience = Settings.Upgrades.experience.startValue + Settings.Upgrades.experience.stepValue * GameData.CardGroupLevel.Load(GameData.CurrentCardGroupId);
             GameData.CardGroupExperience.Add(GameData.CurrentCardGroupId, -experience);
             GameData.CardGroupLevel.Up(GameData.CurrentCardGroupId);
+            OnUpgrade?.Invoke(GameData.CurrentCardGroupId);
             OnClick();
             _upgradeLevelPanel.Hide();
         }

@@ -156,8 +156,8 @@ namespace MyGame
                     return PlayerPrefs.GetInt(_keyEarnedToday + idGroup);
                 }
 
-                private static void SaveLastDay(int idGroup) => PlayerPrefs.SetInt(_keyLastDay + idGroup, DateTime.Now.DayOfYear);
-                private static int GetLastDay(int idGroup) => PlayerPrefs.GetInt(_keyLastDay + idGroup);
+                public static void SaveLastDay(int idGroup) => PlayerPrefs.SetInt(_keyLastDay + idGroup, DateTime.Now.DayOfYear);
+                public static int GetLastDay(int idGroup) => PlayerPrefs.GetInt(_keyLastDay + idGroup);
             }
         }
     }
