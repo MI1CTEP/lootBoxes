@@ -57,6 +57,15 @@ namespace MyGame
             }
         }
 
+        public void SetCurrentGroup()
+        {
+            float maxAnchoredX = _content.sizeDelta.x - 800;
+            float targetAnchoredX = _groupSelectionRects[GameData.CurrentCardGroupId].anchoredPosition.x - 400f;
+            targetAnchoredX = Mathf.Clamp(targetAnchoredX, 0, maxAnchoredX);
+            _content.anchoredPosition = new Vector2(-targetAnchoredX, _content.anchoredPosition.y);
+            _groupSelections[GameData.CurrentCardGroupId].SetCurrent();
+        }
+
         private void SwitchGroup(int id)
         {
             id += GameData.CurrentCardGroupId;

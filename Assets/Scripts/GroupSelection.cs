@@ -26,6 +26,17 @@ namespace MyGame
             SetActiveIndicator(false);
         }
 
+        public void SetCurrent()
+        {
+            if (GroupSelectionPanel.CurrentGroupSelection == this)
+                return;
+
+            if (GroupSelectionPanel.CurrentGroupSelection != null)
+                GroupSelectionPanel.CurrentGroupSelection.ResetSelection();
+
+            SetSelection();
+        }
+
         public void Choose()
         {
             if (GroupSelectionPanel.CurrentGroupSelection == this)

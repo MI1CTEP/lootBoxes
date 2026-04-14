@@ -166,6 +166,7 @@ namespace MyGame.Cards
         {
             CardsData.Add(_card);
             GroupSelectionPanel.Instance.AddAndRemoveNewAction(_card.groupId, true);
+            GameData.CurrentCardGroupId = _card.groupId;
             Close();
         }
 
