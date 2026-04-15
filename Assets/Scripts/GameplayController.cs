@@ -26,7 +26,8 @@ namespace MyGame
 
             Input.multiTouchEnabled = false;
             Application.targetFrameRate = int.MaxValue;
-            if (GameData.IsFirstLaunch)
+
+            if (GameData.IsFirstLaunch())
                 GameData.Keys.Add(1000, false);
 
             _settings.Init();
