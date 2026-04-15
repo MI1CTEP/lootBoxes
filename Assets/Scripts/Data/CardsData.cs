@@ -1,7 +1,10 @@
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using UnityEngine;
 using MyGame.Cards;
+using Newtonsoft.Json;
+using PlayFab;
+using PlayFab.ClientModels;
+using System.Collections.Generic;
+using UnityEngine;
+using static UnityEngine.UI.Image;
 
 namespace MyGame
 {
@@ -9,23 +12,39 @@ namespace MyGame
     {
         private static List<Card>[] _cards;
         private readonly static string _keyForSave = "all_cards_";
+        private const string FULL_SAVE_KEY = "cards_full_save"; // Ключ для полного сохранения
+
+
 
         public static List<Card> GetGroup(int groupId) => _cards[groupId];
 
         //подгружаю данные при старте игры
         public static void Load()
         {
-            _cards = new List<Card>[Settings.CardGroups.Length];
+            //string json = PlayfabService.instance.JsonCardsData;
 
-            for (int i = 0; i < Settings.CardGroups.Length; i++)
+            string json = PlayfabService.instance.dicCurrency[FULL_SAVE_KEY];
+
+            if (string.IsNullOrEmpty(json))
             {
-                if (PlayerPrefs.HasKey(_keyForSave + i))
-                {
-                    string text = PlayerPrefs.GetString(_keyForSave + i);
-                    _cards[i] = JsonConvert.DeserializeObject<List<Card>>(text);
-                }
-                else _cards[i] = new();
+                Debug.Log("Нет сохранения, создаем пустые группы");
+                _cards = new List<Card>[Settings.CardGroups.Length];
+                for (int i = 0; i < _cards.Length; i++)
+                    _cards[i] = new List<Card>();
+                return;
             }
+
+
+            //string json = PlayerPrefs.GetString(FULL_SAVE_KEY);
+            AllCardsData allData = JsonConvert.DeserializeObject<AllCardsData>(json);
+
+
+            _cards = new List<Card>[allData.groups.Count];
+            for (int i = 0; i < allData.groups.Count; i++)
+            {
+                _cards[i] = allData.groups[i] ?? new List<Card>();
+            }
+
         }
 
         //Игрок получил новую карту
@@ -42,6 +61,33 @@ namespace MyGame
             Save(card.groupId);
         }
 
+        //Сохраняю json в строку после изменения списка карт. ДУМАЮ ЭТОТ МЕТОД БОЛЬШЕ НЕ НУЖЕН
+        private static void Save(int idGroup)
+        {
+
+            // Создаем контейнер для всех данных
+            //AllCardsData allData = new AllCardsData();
+            //allData.groups = new List<List<Card>>();
+
+            //for (int i = 0; i < _cards.Length; i++)
+            //{
+            //    allData.groups.Add(_cards[i]);
+            //}
+
+            //string json = JsonConvert.SerializeObject(allData, Formatting.None);
+
+
+            string json = GetDataCardsToString();
+
+            PlayerPrefs.SetString(FULL_SAVE_KEY, json);
+            PlayerPrefs.Save();
+
+
+            //В Playfab
+            //PlayfabService.instance.SetUserData(FULL_SAVE_KEY, json);
+
+        }
+
         public static void DeleteRange(List<Card> cards)
         {
             for (int i = 0; i < cards.Count; i++)
@@ -49,11 +95,29 @@ namespace MyGame
             Save(cards[0].groupId);
         }
 
-        //Сохраняю json в строку после изменения списка карт
-        private static void Save(int idGroup)
+        public static string GetDataCardsToString()
         {
-            string text = JsonConvert.SerializeObject(_cards[idGroup]);
-            PlayerPrefs.SetString(_keyForSave + idGroup, text);
+            AllCardsData allData = new AllCardsData();
+            allData.groups = new List<List<Card>>();
+
+            for (int i = 0; i < _cards.Length; i++)
+            {
+                allData.groups.Add(_cards[i]);
+            }
+
+            string json = JsonConvert.SerializeObject(allData, Formatting.None);
+
+            return json;
         }
+
+
+
+    }
+
+
+    [System.Serializable]
+    public class AllCardsData
+    {
+        public List<List<Card>> groups;
     }
 }
