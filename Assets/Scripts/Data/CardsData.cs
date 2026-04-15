@@ -42,6 +42,13 @@ namespace MyGame
             Save(card.groupId);
         }
 
+        public static void DeleteRange(List<Card> cards)
+        {
+            for (int i = 0; i < cards.Count; i++)
+                _cards[cards[i].groupId].Remove(cards[i]);
+            Save(cards[0].groupId);
+        }
+
         //Сохраняю json в строку после изменения списка карт
         private static void Save(int idGroup)
         {

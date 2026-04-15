@@ -61,7 +61,7 @@ namespace MyGame
             _incomeValue = 0;
             List<Card> cards = CardsData.GetGroup(GameData.CurrentCardGroupId);
             for (int i = 0; i < cards.Count; i++)
-                _incomeValue += Settings.RankCard[cards[i].rank].priceKey;
+                _incomeValue += Settings.RankCard[cards[i].rank].priceKey / 10;
             _incomeValueText.text = $"+{_incomeValue}";
         }
 
