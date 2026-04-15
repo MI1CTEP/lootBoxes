@@ -21,12 +21,17 @@ namespace MyGame
         [SerializeField] private ShopSetting _shopSetting;
         public static ShopSetting Shop { get; private set; }
 
+        [Tooltip("Настройки автомотического пополнения ключей")]
+        [SerializeField] private AutoAddKeysSettings _autoAddKeys;
+        public static AutoAddKeysSettings AutoAddKeys { get; private set; }
+
         public void Init()
         {
             RankCard = _rankCardSetting;
             CardGroups = _cardGroups;
             Upgrades = _upgradesSetting;
             Shop = _shopSetting;
+            AutoAddKeys = _autoAddKeys;
 
             for (int i = 0; i < _cardGroups.Length; i++)
                 _cardGroups[i].Id = i;
@@ -109,5 +114,21 @@ namespace MyGame
 
         [Tooltip("Столько реагента добавится при покупке")]
         public int addLab;
+    }
+
+    [System.Serializable]
+    public sealed class AutoAddKeysSettings
+    {
+        [Tooltip("Когда количество ключей меньше этого maxKeys, то ключи начинаю пополняться автоматически")]
+        public int maxKeys;
+
+        [Tooltip("Заменяет maxKeys после покупки. Когда количество ключей меньше этого maxKeys, то ключи начинаю пополняться автоматически")]
+        public int maxKeysPremium;
+
+        [Tooltip("Столько ключей будет зарабатываться автоматически в час")]
+        public int keysPerHour;
+
+        [Tooltip("Заменяет keysPerHour после покупки. Столько ключей будет зарабатываться автоматически в час")]
+        public int keysPerHourPremium;
     }
 }

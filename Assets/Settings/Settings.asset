@@ -53,3 +53,8 @@ MonoBehaviour:
     addGoldKey: 100
     addKey: 100
     addLab: 100
+  _autoAddKeys:
+    maxKeys: 500
+    maxKeysPremium: 1000
+    keysPerHour: 100
+    keysPerHourPremium: 200

@@ -12,6 +12,8 @@ namespace MyGame
         [SerializeField] private Text _textKeyTimer;
 
         private float _time;
+        private int _maxKey;
+        private int _keysPerHour;
 
         public void Init()
         {
@@ -21,13 +23,38 @@ namespace MyGame
             GameData.Keys.OnAdd += UpdateKeyText;
             GameData.Labs.OnAdd += UpdateLabText;
             GameData.GoldKeys.OnAdd += UpdateGoldKeyText;
+            GameData.AutoAddKeys.OnActivatePremium += CheckMaxKeys;
+
+            int currentKeys = GameData.Keys.GetValue();
+            if (currentKeys < _maxKey)
+            {
+                int elapsedTime = GameData.AutoAddKeys.LoadElapsedTime();
+                int keys = (elapsedTime * _keysPerHour) / 3600;
+                if (currentKeys + keys > _maxKey)
+                    keys = _maxKey - currentKeys;
+                GameData.Keys.Add(keys, false);
+            }
         }
 
         private void UpdateKeyText(int value)
         {
             _textKeyValue.text = GameData.Keys.GetValue().ToString("N0");
-            if(GameData.Keys.GetValue() < 500)
+            CheckMaxKeys();
+        }
+
+        private void CheckMaxKeys()
+        {
+            _maxKey = Settings.AutoAddKeys.maxKeys;
+            _keysPerHour = Settings.AutoAddKeys.keysPerHour;
+            if (GameData.AutoAddKeys.IsPremium())
             {
+                _maxKey = Settings.AutoAddKeys.maxKeysPremium;
+                _keysPerHour = Settings.AutoAddKeys.keysPerHourPremium;
+            }
+
+            if (GameData.Keys.GetValue() < _maxKey)
+            {
+                GameData.AutoAddKeys.SaveLastTime();
                 _textKeyTimer.gameObject.SetActive(true);
                 _keyRect.sizeDelta = new Vector2(230, 40);
             }
@@ -52,7 +79,7 @@ namespace MyGame
         {
             if (!_textKeyTimer.gameObject.activeSelf) return;
 
-            _time += Time.deltaTime * 10 / 3;
+            _time += Time.deltaTime * _keysPerHour / 36f;
             if (_time >= 100)
             {
                 GameData.Keys.Add(1, false);
@@ -67,6 +94,7 @@ namespace MyGame
             GameData.Keys.OnAdd -= UpdateKeyText;
             GameData.Labs.OnAdd -= UpdateLabText;
             GameData.GoldKeys.OnAdd -= UpdateGoldKeyText;
+            GameData.AutoAddKeys.OnActivatePremium -= CheckMaxKeys;
         }
     }
 }

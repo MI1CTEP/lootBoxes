@@ -430,5 +430,48 @@ namespace MyGame
                 }
             }
         }
+
+        public static class AutoAddKeys
+        {
+            private static readonly string _keyPremium = "auto_add_keys_premium";
+            private static readonly string _keyLastTime = "auto_add_keys_last_time";
+
+            public static UnityAction OnActivatePremium { get; set; }
+
+            //Активируем ускоренный зароботок ключей
+            public static void ActivatePremium()
+            {
+                PlayerPrefs.SetInt(_keyPremium, 1);
+                OnActivatePremium?.Invoke();
+            }
+
+            //Проверяем активирована ли ускоренный зароботок ключей
+            public static bool IsPremium()
+            {
+                return PlayerPrefs.GetInt(_keyPremium) == 1;
+            }
+
+            //Сохраняем текущее время в секундах
+            public static void SaveLastTime()
+            {
+                int currentTime = GetCurrentTime();
+                PlayerPrefs.SetInt(_keyLastTime, currentTime);
+            }
+
+            //Cтолько прошло секунд с последнего сохранения времени
+            public static int LoadElapsedTime()
+            {
+                int currentTime = GetCurrentTime();
+                int lastTime = PlayerPrefs.GetInt(_keyLastTime);
+                return currentTime - lastTime;
+            }
+
+            //Столько прошло секунд с 1 января 2026 года
+            private static int GetCurrentTime()
+            {
+                DateTime epoch = new(2026, 1, 1);
+                return (int)(DateTime.Now - epoch).TotalSeconds;
+            }
+        }
     }
 }
