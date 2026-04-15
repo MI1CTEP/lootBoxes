@@ -7,6 +7,7 @@ namespace MyGame.Cards
     public sealed class BigCard : MonoBehaviour
     {
         [SerializeField] private BigCardButtons _bigCardButtons;
+        [SerializeField] private BigCardSellPanel _bigCardSellPanel;
         [SerializeField] private UpgradePanel _upgradePanel;
         [SerializeField] private VideoPlayerPanel _videoPlayerPanel;
         [SerializeField] private Button _playVideoButton;
@@ -30,6 +31,7 @@ namespace MyGame.Cards
         {
             _cardPanel = cardPanel;
             _bigCardButtons.Init(this);
+            _bigCardSellPanel.Init(miniCardsController, this);
             _upgradePanel.Init(this, miniCardsController);
             _videoPlayerPanel.Init(this);
             _playVideoButton.onClick.AddListener(PlayVideo);
@@ -165,6 +167,8 @@ namespace MyGame.Cards
         public void GetCard()
         {
             CardsData.Add(_card);
+            GroupSelectionPanel.Instance.AddAndRemoveNewAction(_card.groupId, true);
+            GameData.CurrentCardGroupId = _card.groupId;
             Close();
         }
 
@@ -180,6 +184,13 @@ namespace MyGame.Cards
             if (_isOpenedUpgrade)
                 _upgradePanel.Hide();
         }
+
+        public void OpenSellPanel()
+        {
+            _bigCardSellPanel.Show(_card.groupId);
+        }
+
+        public void SetCanGet() => _bigCardButtons.SetCanGet();
 
         private void Hide()
         {

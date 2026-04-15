@@ -48,6 +48,7 @@ namespace MyGame
             _cardsGroupPanel.UpdateGroup();
             _passiveIncomePanel.UpdatePanel();
             _miniCardsPanel.UpdateContent();
+            _groupSelectionPanel.SetCurrentGroup();
         }
 
         public void Show()

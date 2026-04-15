@@ -102,6 +102,7 @@ namespace MyGame
                 for (int i = 0; i < _slotMiniCards.Length; i++)
                     CardsData.Delete(_slotMiniCards[i].Card);
                 CardsData.Add(_upMinicard.Card);
+                GroupSelectionPanel.Instance.AddAndRemoveNewAction(_upMinicard.Card.groupId, true);
                 GameData.Labs.Add(-_upgradePrice, true);
                 _bigCard.SetCard(_upMinicard.Card);
                 Hide();
@@ -112,10 +113,7 @@ namespace MyGame
 
         private void LoadUpMiniCard()
         {
-            Card card = new();
-            card.groupId = _card.groupId;
-            card.id = _card.id;
-            card.rank = _card.rank + 1;
+            Card card = Card.GetNew(_card.groupId, _card.id, _card.rank + 1);
 
             _upMinicard = _miniCardsController.GetMiniCard();
             _upMinicard.transform.SetParent(_upPanelContent);

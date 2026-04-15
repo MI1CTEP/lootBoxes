@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace MyGame.Cards
 {
     public sealed class Card
@@ -5,6 +7,7 @@ namespace MyGame.Cards
         public int groupId;
         public int id;
         public int rank;
+        [JsonIgnore] public bool isNew;
 
         public static Card GetNew(int groupId, int id, int rank)
         {
@@ -12,6 +15,7 @@ namespace MyGame.Cards
             card.groupId = groupId;
             card.id = id;
             card.rank = rank;
+            card.isNew = true;
             return card;
         }
     }

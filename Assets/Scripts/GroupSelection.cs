@@ -9,6 +9,7 @@ namespace MyGame
         [SerializeField] private Image _outline;
         [SerializeField] private Color _passiveColor;
         [SerializeField] private Color _activeColor;
+        [SerializeField] private GameObject _newIndicator;
 
         private MainPanel _mainPanel;
         private Button _button;
@@ -22,6 +23,18 @@ namespace MyGame
             _id = id;
             _idText.text = (id + 1).ToString();
             ResetSelection();
+            SetActiveIndicator(false);
+        }
+
+        public void SetCurrent()
+        {
+            if (GroupSelectionPanel.CurrentGroupSelection == this)
+                return;
+
+            if (GroupSelectionPanel.CurrentGroupSelection != null)
+                GroupSelectionPanel.CurrentGroupSelection.ResetSelection();
+
+            SetSelection();
         }
 
         public void Choose()
@@ -50,6 +63,8 @@ namespace MyGame
             _idText.color = _activeColor;
             _outline.color = _activeColor;
         }
+
+        public void SetActiveIndicator(bool value) => _newIndicator.SetActive(value);
 
         private void ResetSelection()
         {

@@ -88,6 +88,13 @@ namespace MyGame
 
         }
 
+        public static void DeleteRange(List<Card> cards)
+        {
+            for (int i = 0; i < cards.Count; i++)
+                _cards[cards[i].groupId].Remove(cards[i]);
+            Save(cards[0].groupId);
+        }
+
         public static string GetDataCardsToString()
         {
             AllCardsData allData = new AllCardsData();

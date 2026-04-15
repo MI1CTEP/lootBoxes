@@ -11,6 +11,7 @@ namespace MyGame.Cards
         [SerializeField] private Text _idText;
         [SerializeField] private Image _outline;
         [SerializeField] private GameObject[] _selectebles;
+        [SerializeField] private GameObject _newIndicator;
 
         private Sprite _cardSprite;
         private Card _card;
@@ -29,6 +30,7 @@ namespace MyGame.Cards
             _idText.text = $"#{card.id + 1}";
             _idText.color = Settings.RankCard[card.rank].outlineColor;
             _outline.color = Settings.RankCard[card.rank].outlineColor;
+            _newIndicator.SetActive(card.isNew);
             AsyncContent.LoadMiniCardSprite(card, (sprite) => 
             {
                 if (_cardSprite != null)

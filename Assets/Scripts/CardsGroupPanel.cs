@@ -14,8 +14,10 @@ namespace MyGame
         [SerializeField] private Text _upgradeButtonText;
         [SerializeField] private Image _progress;
         [SerializeField] private UpgradeLevelPanel _upgradeLevelPanel;
+        [SerializeField] private GameObject _newIndicator;
 
         private int _neededExperience;
+        private bool[] _isCanUpgrade;
 
         public void Init()
         {
@@ -23,6 +25,12 @@ namespace MyGame
 
             _upgradeLevelPanel.Init();
             _upgradeButton.onClick.AddListener(Upgrade);
+
+            _newIndicator.SetActive(false);
+
+            _isCanUpgrade = new bool[Settings.CardGroups.Length];
+            CheckCanUpgradeAllGroups();
+            UpgradeCardGroupPanel.OnUpgrade += CheckCanUpgrade;
         }
 
         public void UpdateGroup()
@@ -38,21 +46,51 @@ namespace MyGame
             UpdateProgress();
         }
 
+        private void CheckCanUpgradeAllGroups()
+        {
+            for (int i = 0; i < Settings.CardGroups.Length; i++)
+            {
+                CheckCanUpgrade(i);
+            }
+        }
+
+        private void CheckCanUpgrade(int idGroup)
+        {
+            int currentExperience = GameData.CardGroupExperience.Load(idGroup);
+            int neededExperience = Settings.Upgrades.experience.startValue + Settings.Upgrades.experience.stepValue * GameData.CardGroupLevel.Load(idGroup);
+
+            if(!_isCanUpgrade[idGroup] && currentExperience >= neededExperience)
+            {
+                GroupSelectionPanel.Instance.AddAndRemoveNewAction(idGroup, true);
+                _newIndicator.SetActive(true);
+                _isCanUpgrade[idGroup] = true;
+            }
+            else if(_isCanUpgrade[idGroup] && currentExperience < neededExperience)
+            {
+                GroupSelectionPanel.Instance.AddAndRemoveNewAction(idGroup, false);
+                _newIndicator.SetActive(false);
+                _isCanUpgrade[idGroup] = false;
+            }
+        }
+
         private void UpdateProgress(int value = 0)
         {
             int curentExperience = GameData.CardGroupExperience.Load(GameData.CurrentCardGroupId);
             if (curentExperience >= _neededExperience)
             {
+                _newIndicator.SetActive(true);
                 _upgradeButton.interactable = true;
                 _progress.fillAmount = 1;
                 _upgradeButtonText.text = "сксвьхрэ";
             }
             else
             {
+                _newIndicator.SetActive(false);
                 _upgradeButton.interactable = false;
                 _progress.fillAmount = (float)curentExperience / _neededExperience;
                 _upgradeButtonText.text = $"{curentExperience}/{_neededExperience}";
             }
+            CheckCanUpgrade(GameData.CurrentCardGroupId);
         }
 
         private void Upgrade()
@@ -64,6 +102,7 @@ namespace MyGame
         private void OnDestroy()
         {
             GameData.Keys.OnAdd -= UpdateProgress;
+            UpgradeCardGroupPanel.OnUpgrade -= CheckCanUpgrade;
         }
     }
 }

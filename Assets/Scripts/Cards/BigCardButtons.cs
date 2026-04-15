@@ -11,6 +11,7 @@ namespace MyGame.Cards
         [SerializeField] private Button _destroyButton;
         [SerializeField] private Button _getButton;
         [SerializeField] private Button _upgradeButton;
+        [SerializeField] private Button _sellOtherButton;
         [SerializeField] private Text _sellText;
         [SerializeField] private Text _destroyText;
         [SerializeField] private GameObject _capacityText;
@@ -22,6 +23,7 @@ namespace MyGame.Cards
         private RectTransform _destroyRect;
         private RectTransform _getRect;
         private RectTransform _upgradeRect;
+        private RectTransform _sellOtherRect;
 
         public void Init(BigCard bigCard)
         {
@@ -40,10 +42,13 @@ namespace MyGame.Cards
             _upgradeButton.onClick.AddListener(bigCard.ShowUpgrade);
             _upgradeButton.onClick.AddListener(Hide);
 
+            _sellOtherButton.onClick.AddListener(bigCard.OpenSellPanel);
+
             _sellRect = _sellButton.GetComponent<RectTransform>();
             _destroyRect = _destroyButton.GetComponent<RectTransform>();
             _getRect = _getButton.GetComponent<RectTransform>();
             _upgradeRect = _upgradeButton.GetComponent<RectTransform>();
+            _sellOtherRect = _sellOtherButton.GetComponent<RectTransform>();
 
             gameObject.SetActive(false);
         }
@@ -69,15 +74,14 @@ namespace MyGame.Cards
             {
                 int currentCapacity = CardsData.GetGroup(_card.groupId).Count;
                 int maxCapacity = GameData.CardGroupCapacity.LoadLevel(_card.groupId) * Settings.Upgrades.capacity.stepValue + Settings.Upgrades.capacity.startValue;
-                _anim.Insert(0, _getRect.DOAnchorPosY(50, 1));
                 if(currentCapacity >= maxCapacity)
                 {
-                    _getButton.interactable = false;
+                    _anim.Insert(0, _sellOtherRect.DOAnchorPosY(50, 1));
                     _anim.InsertCallback(1, () => _capacityText.SetActive(true));
                 }
                 else
                 {
-                    _getButton.interactable = true;
+                    _anim.Insert(0, _getRect.DOAnchorPosY(50, 1));
                 }
             }
             else
@@ -97,12 +101,20 @@ namespace MyGame.Cards
             _anim.InsertCallback(1, () => gameObject.SetActive(false));
         }
 
+        public void SetCanGet()
+        {
+            _getRect.anchoredPosition = new Vector2(_getRect.anchoredPosition.x, 50);
+            _sellOtherRect.anchoredPosition = new Vector2(_sellOtherRect.anchoredPosition.x, -600);
+            _capacityText.SetActive(false);
+        }
+
         private void SetStartPositions()
         {
             _sellRect.anchoredPosition = new Vector2(-800, _sellRect.anchoredPosition.y);
             _destroyRect.anchoredPosition = new Vector2(800, _destroyRect.anchoredPosition.y);
             _getRect.anchoredPosition = new Vector2(_getRect.anchoredPosition.x, -600);
             _upgradeRect.anchoredPosition = new Vector2(_upgradeRect.anchoredPosition.x, -600);
+            _sellOtherRect.anchoredPosition = new Vector2(_sellOtherRect.anchoredPosition.x, -600);
         }
     }
 }
