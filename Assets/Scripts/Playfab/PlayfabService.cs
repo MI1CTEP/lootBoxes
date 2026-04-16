@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using MyGame;
+using Newtonsoft.Json;
 using PlayFab;
 using PlayFab.ClientModels;
 using System;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEditor.Progress;
+
 
 public class PlayfabService : MonoBehaviour
 {
@@ -29,25 +30,19 @@ public class PlayfabService : MonoBehaviour
     private string _testNameUser = "userCards";
 
 
-    //Строка доступных карт
-    private string _jsonCardsData = null;
-    public string JsonCardsData => _jsonCardsData;
+
+
+    public string jsonCardsData = "";
 
     //хранилище данных. Все переменные вынести в нужное место
-    public Dictionary<string, string> dicCurrency = new Dictionary<string, string>()
+    public Dictionary<string, string> dicGameData = new Dictionary<string, string>()
     {
-        {"cards_full_save", ""},
+        //{"cards_full_save", ""},
         {"keys", "0"},
         {"gold_keys", "0"},
         {"labs", "0"},
     };
-   // public Dictionary<string, string> DicCurrency => _dicCurrency;
 
-
-    //public void AddDataToDict(string key, )
-    //{
-
-    //}
 
     private void Awake()
     {
@@ -72,12 +67,15 @@ public class PlayfabService : MonoBehaviour
 
     private void OnApplicationPause(bool pause)
     {
-       // SetUserData(DicCurrency);
+        if (pause)
+            SetUserData();
+
+        // SetUserData(DicCurrency);
     }
 
     private void OnApplicationQuit()
     {
-        SetUserData(dicCurrency);
+       // SetUserData();
     }
 
 
@@ -107,18 +105,41 @@ public class PlayfabService : MonoBehaviour
 
     private async UniTask LoadGame()
     {
-        List<string> keys = dicCurrency.Keys.ToList();
-        var allData = await GetUserDataAsync(keys);
 
-        //Вроде лишнее? Можно сразу в _dicCurrency
+        List<string> listKeys = new List<string>();
+        listKeys.Add(CardsData.FULL_SAVE_KEY);
+        listKeys.Add(GameData.KEY_SAVE_GAME_DATA);
+
+        var allData = await GetUserDataAsync(listKeys);
+
+        Debug.Log(allData.Count);
         foreach (var item in allData)
         {
-            dicCurrency[item.Key] = item.Value;
+            Debug.Log($"{item.Key}    {item.Value}");
         }
 
-        //_jsonCardsData = await GetUserDataAsync("cards_full_save");
+        //Тут вернулось 2 индекса
 
-        // await UniTask.Delay(5000);
+        if(allData.ContainsKey(CardsData.FULL_SAVE_KEY))
+            jsonCardsData = allData[CardsData.FULL_SAVE_KEY];
+
+
+        if(allData.ContainsKey(GameData.KEY_SAVE_GAME_DATA))
+        {
+            var loadedData = JsonConvert.DeserializeObject<Dictionary<string, string>>(allData[GameData.KEY_SAVE_GAME_DATA]);
+            foreach (var item in loadedData)
+            {
+                if (dicGameData.ContainsKey(item.Key))
+                {
+                    dicGameData[item.Key] = item.Value; // Обновляем существующий ключ
+                }
+                else
+                {
+                    dicGameData.Add(item.Key, item.Value); // Добавляем новый ключ (если нужно)
+                }
+            }
+        }
+      
 
         SceneManager.LoadScene("SampleScene");
     }
@@ -232,15 +253,26 @@ public class PlayfabService : MonoBehaviour
         });
     }
 
-    public void SetUserData(Dictionary<string, string> data)
+    public void SetUserData()
     {
         Debug.Log("SetUserData");
 
-        data["cards_full_save"] = CardsData.GetDataCardsToString(); //Актуализируем информацию о карточках
+        //сохранить все данные GameData в одну строку
+        string gameDataJson = JsonConvert.SerializeObject(dicGameData);
+
+
+        //Debug.Log("SetUserData");
+
+        //data["cards_full_save"] = CardsData.GetDataCardsToString(); //Актуализируем информацию о карточках
+
+        Dictionary<string,string> allSaveData = new Dictionary<string,string>();
+        allSaveData.Add(CardsData.FULL_SAVE_KEY, CardsData.GetDataCardsToString());
+        allSaveData.Add(GameData.KEY_SAVE_GAME_DATA, gameDataJson);
+
 
         PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
         {
-            Data = data
+            Data = allSaveData
         },
         result => Debug.Log("Successfully updated user data"),
         error => {

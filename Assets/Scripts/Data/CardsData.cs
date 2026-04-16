@@ -12,7 +12,7 @@ namespace MyGame
     {
         private static List<Card>[] _cards;
         private readonly static string _keyForSave = "all_cards_";
-        private const string FULL_SAVE_KEY = "cards_full_save"; // Ключ для полного сохранения
+        public const string FULL_SAVE_KEY = "cards_full_save"; // Ключ для полного сохранения
 
 
 
@@ -23,7 +23,8 @@ namespace MyGame
         {
             //string json = PlayfabService.instance.JsonCardsData;
 
-            string json = PlayfabService.instance.dicCurrency[FULL_SAVE_KEY];
+            //string json = PlayfabService.instance.dicDataCards[FULL_SAVE_KEY];
+            string json = PlayfabService.instance.jsonCardsData;
 
             if (string.IsNullOrEmpty(json))
             {

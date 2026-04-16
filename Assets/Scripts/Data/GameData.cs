@@ -1,27 +1,59 @@
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections.Generic;
 
 namespace MyGame
 {
     public static class GameData
     {
+        public const string KEY_SAVE_GAME_DATA = "save_game_data";
         public static int CurrentCardGroupId { get; set; } //Текущая группа карточек
         //public static bool IsFirstLaunch => PlayerPrefs.GetInt("first") == 0; //Проверка на первый запуск игры
+
+        private static void SaveNewData(string key, string valueData)
+        {
+            if (PlayfabService.instance.dicGameData.TryAdd(key, valueData)) //если новый ключ
+            {
+
+            }
+            else //если ключ уже есть
+            {
+                PlayfabService.instance.dicGameData[key] = valueData;
+            }
+        }
+
+        private static T LoadData<T>(string key, T valueDefolt)
+        {
+            if (PlayfabService.instance.dicGameData.TryGetValue(key, out var value))
+            {
+                if (typeof(T) == typeof(bool))
+                {
+                    Debug.Log(value);
+                    var result = !(bool)(object)valueDefolt;
+                    Debug.Log(result);
+                    return (T)(object)result;
+                }  
+                else
+                {
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+
+            }
+            else
+            {
+                return valueDefolt;
+            }
+        }
 
 
         public static bool IsFirstLaunch()
         {
             string key = "first";
 
-            if (PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-            {
-                return int.Parse(value) == 0;
-            }
-            else
-            {
-                return false;
-            }
+
+
+            return LoadData(key, true);
 
         }
 
@@ -33,14 +65,9 @@ namespace MyGame
             string key = "first";
             string valueDic = 1.ToString();
 
-            if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-            {
 
-            }
-            else //если ключ уже есть
-            {
-                PlayfabService.instance.dicCurrency[key] = valueDic;
-            }
+            SaveNewData(key, valueDic);
+
         }
 
         public static class Keys
@@ -53,9 +80,8 @@ namespace MyGame
             //Добавляем ключи и сохраняем. Также говорим нужно ли показывать партикл добавления ключей
             public static void Add(int value, bool showParticle)
             {
-                //Позже состыковать с временем выхода и начислять (можно зависывать время в Playfab)
 
-                PlayfabService.instance.dicCurrency[_key] = (value + GetValue()).ToString();
+                PlayfabService.instance.dicGameData[_key] = (value + GetValue()).ToString();
                 //PlayerPrefs.SetInt(_key, value + GetValue());
                 OnAdd?.Invoke(value);
                 if (showParticle)
@@ -63,7 +89,7 @@ namespace MyGame
             }
 
             //public static int GetValue() => PlayerPrefs.GetInt(_key);
-            public static int GetValue() => int.Parse(PlayfabService.instance.dicCurrency[_key]);
+            public static int GetValue() => int.Parse(PlayfabService.instance.dicGameData[_key]);
         }
 
         public static class GoldKeys
@@ -76,14 +102,14 @@ namespace MyGame
             public static void Add(int value, bool showParticle)
             {
                 //PlayerPrefs.SetInt(_key, value + GetValue());
-                PlayfabService.instance.dicCurrency[_key] = (value + GetValue()).ToString();
+                PlayfabService.instance.dicGameData[_key] = (value + GetValue()).ToString();
                 OnAdd?.Invoke(value);
                 if (showParticle)
                     OnParticle?.Invoke(value);
             }
 
            // public static int GetValue() => PlayerPrefs.GetInt(_key);
-            public static int GetValue() => int.Parse(PlayfabService.instance.dicCurrency[_key]);
+            public static int GetValue() => int.Parse(PlayfabService.instance.dicGameData[_key]);
         }
 
         public static class Labs
@@ -95,7 +121,7 @@ namespace MyGame
 
             public static void Add(int value, bool showParticle)
             {
-                PlayfabService.instance.dicCurrency[_key] = (value + GetValue()).ToString();
+                PlayfabService.instance.dicGameData[_key] = (value + GetValue()).ToString();
                 //PlayerPrefs.SetInt(_key, value + GetValue());
                 OnAdd?.Invoke(value);
                 if (showParticle)
@@ -103,7 +129,7 @@ namespace MyGame
             }
 
            // public static int GetValue() => PlayerPrefs.GetInt(_key);
-            public static int GetValue() => int.Parse(PlayfabService.instance.dicCurrency[_key]);
+            public static int GetValue() => int.Parse(PlayfabService.instance.dicGameData[_key]);
         }
 
         //Опыт внутри группы карт (для прокачки уровня группы карт)
@@ -116,14 +142,8 @@ namespace MyGame
                 string key = _key + idGroup;
                 string valueDic = (Load(idGroup) + value).ToString();
 
-                if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-                {
-                    
-                }
-                else //если ключ уже есть
-                {
-                    PlayfabService.instance.dicCurrency[key] = valueDic;
-                }
+                SaveNewData(key, valueDic);
+
 
                // PlayerPrefs.SetInt(_key + idGroup, Load(idGroup) + value);
             }
@@ -135,14 +155,9 @@ namespace MyGame
 
                 string key = _key + idGroup;
 
-                if(PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-                {
-                    return int.Parse(value);
-                }
-                else
-                {
-                    return 0;
-                }
+                return LoadData(key, 0);
+
+
             }
 
         }
@@ -157,14 +172,8 @@ namespace MyGame
                 string key = _key + idGroup;
                 string valueDic = (Load(idGroup) + 1).ToString();
 
-                if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-                {
+                SaveNewData(key, valueDic);
 
-                }
-                else //если ключ уже есть
-                {
-                    PlayfabService.instance.dicCurrency[key] = valueDic;
-                }
 
                // PlayerPrefs.SetInt(_key + idGroup, Load(idGroup) + 1);
             }
@@ -177,14 +186,9 @@ namespace MyGame
 
                 string key = _key + idGroup;
 
-                if (PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-                {
-                    return int.Parse(value);
-                }
-                else
-                {
-                    return 0;
-                }
+                return LoadData(key, 0);
+
+
             }
         }
 
@@ -199,14 +203,9 @@ namespace MyGame
                 string key = _key + idGroup;
                 string valueDic = (LoadLevel(idGroup) + 1).ToString();
 
-                if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-                {
 
-                }
-                else //если ключ уже есть
-                {
-                    PlayfabService.instance.dicCurrency[key] = valueDic;
-                }
+                SaveNewData(key, valueDic);
+
 
 
                 //int currentLevel = LoadLevel(idGroup);
@@ -220,14 +219,9 @@ namespace MyGame
 
                 string key = _key + idGroup;
 
-                if (PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-                {
-                    return int.Parse(value);
-                }
-                else
-                {
-                    return 0;
-                }
+                return LoadData(key, 0);
+
+
             }
         }
 
@@ -247,14 +241,8 @@ namespace MyGame
                     string key = _key + idGroup;
                     string valueDic = (LoadLevel(idGroup) + 1).ToString();
 
-                    if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-                    {
+                    SaveNewData(key, valueDic);
 
-                    }
-                    else //если ключ уже есть
-                    {
-                        PlayfabService.instance.dicCurrency[key] = valueDic;
-                    }
 
                     //int currentLevel = LoadLevel(idGroup);
                     //PlayerPrefs.SetInt(_key + idGroup, currentLevel + 1);
@@ -268,14 +256,9 @@ namespace MyGame
 
                     string key = _key + idGroup;
 
-                    if (PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-                    {
-                        return int.Parse(value);
-                    }
-                    else
-                    {
-                        return 0;
-                    }
+                    return LoadData(key, 0);
+
+
                 }
             }
 
@@ -292,14 +275,8 @@ namespace MyGame
                     string key = _keyLevel + idGroup;
                     string valueDic = (LoadLevel(idGroup) + 1).ToString();
 
-                    if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-                    {
 
-                    }
-                    else //если ключ уже есть
-                    {
-                        PlayfabService.instance.dicCurrency[key] = valueDic;
-                    }
+                    SaveNewData(key, valueDic);
 
 
                     //int currentLevel = LoadLevel(idGroup);
@@ -314,14 +291,9 @@ namespace MyGame
 
                     string key = _keyLevel + idGroup;
 
-                    if (PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-                    {
-                        return int.Parse(value);
-                    }
-                    else
-                    {
-                        return 0;
-                    }
+                    return LoadData(key, 0);
+
+
                 }
 
 
@@ -337,14 +309,9 @@ namespace MyGame
                     string key = _keyEarnedToday + idGroup;
                     string valueDic = (LoadEarnedToday(idGroup) + 1).ToString();
 
-                    if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-                    {
+                    SaveNewData(key, valueDic);
 
-                    }
-                    else //если ключ уже есть
-                    {
-                        PlayfabService.instance.dicCurrency[key] = valueDic;
-                    }
+
                 }
 
 
@@ -358,14 +325,9 @@ namespace MyGame
                         string keyDic = _keyEarnedToday + idGroup;
                         string valueDic = 0.ToString();
 
-                        if (PlayfabService.instance.dicCurrency.TryAdd(keyDic, valueDic)) //если новый ключ
-                        {
+                        SaveNewData(keyDic, valueDic);
 
-                        }
-                        else //если ключ уже есть
-                        {
-                            PlayfabService.instance.dicCurrency[keyDic] = valueDic;
-                        }
+
 
 
                         //PlayerPrefs.SetInt(_keyEarnedToday + idGroup, 0);
@@ -376,14 +338,7 @@ namespace MyGame
 
                     string key = _keyEarnedToday + idGroup;
 
-                    if (PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-                    {
-                        return int.Parse(value);
-                    }
-                    else
-                    {
-                        return 0;
-                    }
+                    return LoadData(key, 0);
 
 
                     //return PlayerPrefs.GetInt(_keyEarnedToday + idGroup);
@@ -399,14 +354,9 @@ namespace MyGame
                     string key = _keyLastDay + idGroup;
                     string valueDic = DateTime.Now.DayOfYear.ToString();
 
-                    if (PlayfabService.instance.dicCurrency.TryAdd(key, valueDic)) //если новый ключ
-                    {
 
-                    }
-                    else //если ключ уже есть
-                    {
-                        PlayfabService.instance.dicCurrency[key] = valueDic;
-                    }
+                    SaveNewData(key, valueDic);
+
                 }
 
 
@@ -419,14 +369,9 @@ namespace MyGame
 
                     string key = _keyLastDay + idGroup;
 
-                    if (PlayfabService.instance.dicCurrency.TryGetValue(key, out var value))
-                    {
-                        return int.Parse(value);
-                    }
-                    else
-                    {
-                        return 0;
-                    }
+                    return LoadData(key, 0);
+
+
                 }
             }
         }
@@ -441,29 +386,57 @@ namespace MyGame
             //Активируем ускоренный зароботок ключей
             public static void ActivatePremium()
             {
-                PlayerPrefs.SetInt(_keyPremium, 1);
+                //PlayerPrefs.SetInt(_keyPremium, 1);
+
+
+                string key = _keyPremium;
+                string valueDic = 1.ToString();
+
+                SaveNewData(key, valueDic);
+
+
+
                 OnActivatePremium?.Invoke();
             }
 
             //Проверяем активирована ли ускоренный зароботок ключей
             public static bool IsPremium()
             {
-                return PlayerPrefs.GetInt(_keyPremium) == 1;
+                string key = _keyPremium;
+
+                return LoadData(key, false);
+
+
+
+                //return PlayerPrefs.GetInt(_keyPremium) == 1;
             }
 
             //Сохраняем текущее время в секундах
             public static void SaveLastTime()
             {
-                int currentTime = GetCurrentTime();
-                PlayerPrefs.SetInt(_keyLastTime, currentTime);
+                //int currentTime = GetCurrentTime();
+                //PlayerPrefs.SetInt(_keyLastTime, currentTime);
+
+                string key = _keyLastTime;
+                string valueDic = GetCurrentTime().ToString();
+
+                SaveNewData(key, valueDic);
+
+
             }
 
             //Cтолько прошло секунд с последнего сохранения времени
             public static int LoadElapsedTime()
             {
                 int currentTime = GetCurrentTime();
-                int lastTime = PlayerPrefs.GetInt(_keyLastTime);
-                return currentTime - lastTime;
+                //int lastTime = PlayerPrefs.GetInt(_keyLastTime);
+                //return currentTime - lastTime;
+
+
+                string key = _keyLastTime;
+
+                return LoadData(key, currentTime);
+
             }
 
             //Столько прошло секунд с 1 января 2026 года
